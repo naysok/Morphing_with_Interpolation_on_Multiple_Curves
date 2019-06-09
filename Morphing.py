@@ -37,22 +37,65 @@ def flip_2d_array(array_2d):
 
 
 ### InterpCrv
-def interp_curve(array_2d_f):
+def interp_crvs(array_2d_f):
     in_crvs = []
     
     for i in xrange(len(array_2d_f)):
         crv = rs.AddInterpCurve(array_2d_f[i])
-        print crv
         in_crvs.append(crv)
     
     return in_crvs
 
 
+
+### divide interp curve
+def divide_interp_crv(crvs, pts_div_crv_flip):
+    
+    # print len(crvs)
+    # print len(pts_div_crv_flip)
+    
+    crv_split_array = []
+    
+    for i in xrange(len(crvs)):
+        crv = crvs[i]
+        pts = pts_div_crv_flip[i]
+        # print pts
+        
+        param_split_pts = []
+        for j in xrange(len(pts)):
+            param_on_crv = rs.CurveClosestPoint(crv, pts[j])
+            param_split_pts.append(param_on_crv)
+        print param_split_pts
+        print "---"
+        
+        ### slice k - k+1
+        crv_split = rs.SplitCurve(crv, param_split_pts)
+        
+        crv_split_array.append(crv_split)
+    
+    return crv_split_array
+
+
+
 pts_div_crv = divide_crvs(CURVES, DIV_COUNT)
 pts_div_crv_flip = flip_2d_array(pts_div_crv)
-crv = interp_curve(pts_div_crv_flip)
+crvs = interp_crvs(pts_div_crv_flip)
+crvs_segment = divide_interp_crv(crvs, pts_div_crv_flip)
 
-debug = crv
+debug = crvs_segment[3]
+
+
+#hoge = []
+#for num in xrange(len(pts_div_crv_flip)):
+#    print num
+#    hoge.append(rs.AddInterpCurve(pts_div_crv_flip[num]))
+#
+#for num in xrange(len(pts_div_crv)):
+#    print num
+#    hoge.append(rs.AddInterpCurve(pts_div_crv[num]))
+
+#debug = hoge
+
 
 
 
@@ -80,6 +123,11 @@ for i in xrange(divCount):
     tmp_interpCrv = rs.AddInterpCurve(flipMatPts)
     tmp_interpCrv_coerce = rs.coercecurve(tmp_interpCrv)
     tmp_interpCrv_coerce.Domain = rg.Interval(0,1)
+    
+    
+    
+    
+    
     
     all_v2 = []
     Result_v2 = []
